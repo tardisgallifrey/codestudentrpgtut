@@ -9,12 +9,8 @@ public class Main{
 
     private static void go(){
 
-        GameLogic game = new GameLogic();
-
-        game.printHeading("Testing helper methods");
-        game.anythingToContinue();
-        game.clearConsole();
-        int input = game.readInt("Enter 1, 2, or 3: ", 3);
+        GameLogic.startGame();
     }
+
 
 }
