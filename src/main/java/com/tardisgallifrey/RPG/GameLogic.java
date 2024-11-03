@@ -2,24 +2,30 @@ package com.tardisgallifrey.RPG;
 
 import java.util.Scanner;
 
+//Fred uses a very large class with all static methods.  It is
+//logical to do so, but many of these methods could be
+//codes as objects.  Battle especially.
 public class GameLogic {
+    //class fields and main variables
     static Scanner input = new Scanner(System.in);
     static Player player;
     public static boolean isRunning;
 
-    //Story elements
+    //Story elements needed, locations, encounter types, enemy types
     public static int place = 0, act = 1;
     public static String[] places = {"Everlasting Mountains", "Haunted Landlines", "Castle of the Evil Emperor", "Throne Room"};
-
     public static String[] encounters = {"Battle", "Battle", "Battle", "Rest", "Rest"};
     public static String[] enemies = {"Ogre", "Ogre", "Goblin", "Goblin", "Stone Elemental"};
 
+    //get user/player input according to integer controlled menu options
     public static int readInt(String prompt, int userChoice){
         int val;
 
-        
+        //print is better than println here.
         do{
-            System.out.println(prompt);
+            //print prompt
+            System.out.print(prompt);
+            //get user value in try/catch block
             try {
                 val = input.nextInt();
             }catch(Exception e){
@@ -27,15 +33,19 @@ public class GameLogic {
                 System.out.println("Remember to enter an integer!");
             }
         }while(val < 1 || val > userChoice);
+
+        //send value back to caller
         return val;
     }
 
+    //to clear the console.
     public static void clearConsole(){
         for(int i=0; i < 100; i++){
             System.out.println();
         }
     }
 
+    //a print separator to mark off text items
     public static void printSeparator(int n){
         for(int i = 0; i < n; i++){
             System.out.print("-");
@@ -43,17 +53,21 @@ public class GameLogic {
         System.out.println();
     }
 
+    //print a heading using separators
+    //Heading and separators could be moved to a static class by itself
     public static void printHeading(String title){
         printSeparator(30);
         System.out.println(title);
         printSeparator(30);
     }
 
+    //stop to let player decide or read
     public static void anythingToContinue(){
         System.out.println("\nEnter anything to continue...");
         input.next();
     }
 
+    //start the game by setting defaults, etc.
     public static void startGame() {
         boolean nameSet = false;
         String name;
@@ -61,13 +75,14 @@ public class GameLogic {
         clearConsole();
         printSeparator(40);
         printSeparator(30);
-        System.out.println("MY TEXT RPG GAME IS NULL");
-        System.out.println("TEXT RPG GAME BY ME");
+        System.out.println("The Evil Empire");
+        System.out.println("TEXT RPG GAME BY Fred");
         printSeparator(30);
         printSeparator(40);
 
         anythingToContinue();
 
+        //get player name
         do {
             clearConsole();
             printHeading("What's your name?");
@@ -82,16 +97,24 @@ public class GameLogic {
             }
         }while (!nameSet) ;
 
+        //start the story
         Story.printIntro();
 
+        //keeps game running until it doesn't
         isRunning = true;
+
+        //create player object
         player = new Player(name);
 
+        //begin the story
         Story.printFirstActIntro();
 
+        //run the game loop
         gameLoop();
     }
 
+    //main game loop
+    //I prefer switch/case on integer choices, even for just 2 sometimes
     public static void gameLoop(){
         while(isRunning){
             printMenu();
@@ -104,6 +127,8 @@ public class GameLogic {
         }
     }
 
+    //prints character information
+    //could be moved to overriden toString() method in Player or Character
     public static void characterInfo(){
         clearConsole();
         printHeading("CHARACTER INFO");
@@ -127,6 +152,7 @@ public class GameLogic {
         anythingToContinue();
     }
 
+    //print the game menu
     public static void printMenu(){
         clearConsole();
         printHeading(places[place]);
@@ -138,6 +164,7 @@ public class GameLogic {
 
     }
 
+    //keep game going until act 4
     public static void continueJourney(){
         checkAct();
         if(act != 4){
@@ -146,6 +173,7 @@ public class GameLogic {
 
     }
 
+    //provide random encounters
     private static void randomEncounter() {
 
         int encounter = (int) (Math.random() * encounters.length);
@@ -159,6 +187,7 @@ public class GameLogic {
         }
     }
 
+    //buy stuff
     private static void shop() {
         clearConsole();
         printHeading("You meet a mysterious stranger.\nHe offers you something:");
@@ -182,6 +211,7 @@ public class GameLogic {
         }
     }
 
+    //heal health/hp
     private static void takeRest() {
         clearConsole();
         if(player.restsLeft >= 1){
@@ -208,6 +238,7 @@ public class GameLogic {
         }
     }
 
+    //engage in random battles
     private static void randomBattle() {
         clearConsole();
         printHeading("You encountered an evil minded creature.  You'll have to fight it!");
@@ -219,6 +250,7 @@ public class GameLogic {
 
     }
 
+    //combat resolution
     private static void battle(Enemy enemy) {
 
         //not using switch/case here because it's too convoluted
@@ -322,6 +354,7 @@ public class GameLogic {
         }
     }
 
+    //You died...
     private static void playerDied() {
         clearConsole();
         printHeading("You died...");
@@ -331,6 +364,7 @@ public class GameLogic {
     }
 
 
+    //check to see which act we are in and do accordingly
     private static void checkAct() {
 
         if(player.xp >= 10 && act == 1){
@@ -362,6 +396,8 @@ public class GameLogic {
             player.chooseTrait();
             Story.printThirdActIntro();
 
+            //At this point, change things
+            //to those closer to castle
             enemies[0] = "Evil Mercenary";
             enemies[1] = "Evil Mercenary";
             enemies[2] = "Henchman of the Evil Emperor";
@@ -382,12 +418,15 @@ public class GameLogic {
             Story.printThirdActOutro();
             player.chooseTrait();
             Story.printFourthActIntro();
-            
             player.hp = player.maxHp;
+
+            //It's the final c...no it's not
+            //Boss Battle
             finalBattle();
         }
     }
 
+    //Boss Battle
     private static void finalBattle() {
         battle(new Enemy("THE EVIL EMPEROR", 300));
         Story.printEnd(player);
