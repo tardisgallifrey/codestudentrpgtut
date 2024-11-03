@@ -3,6 +3,7 @@ package com.tardisgallifrey.RPG;
 public class Player extends Character{
 
     public int numAtkUpgrades, numDefUpgrades;
+    int gold, restsLeft, pots;
     
     public String[] atkUpGrades = {"Strength", "Power", "Might", "Godlike Strength"};
     public String[] defUpgrades = {"Heavy Bones", "Stoneskin", "Scale Armor", "Holy Aura"};
@@ -11,6 +12,9 @@ public class Player extends Character{
         super(name, 100, 0);
         this.numAtkUpgrades = 0;
         this.numDefUpgrades = 0;
+        this.gold = 5;
+        this.restsLeft = 1;
+        this.pots = 0;
         chooseTrait();
     }
 

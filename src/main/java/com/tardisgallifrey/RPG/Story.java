@@ -102,4 +102,9 @@ public class Story {
     }
 
 
+    public static void printEnd(Player player) {
+        System.out.println("CONGRATULATIONS! You defeated THE EVIL EMPEROR!");
+        GameLogic.characterInfo();
+        System.out.println("The name of "+player.name+" will become legendary!");
+    }
 }

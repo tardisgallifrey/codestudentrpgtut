@@ -109,7 +109,10 @@ public class GameLogic {
         printHeading("CHARACTER INFO");
         System.out.println(player.name + "\tHP: " + player.hp + "/" + player.maxHp);
         printSeparator(20);
-        System.out.println("XP: " + player.xp);
+        System.out.println("XP: " + player.xp+"\tGold: "+player.gold);
+        printSeparator(20);
+        System.out.println("# of Potions: "+player.pots);
+        printSeparator(20);
 
         if(player.numAtkUpgrades > 0){
             System.out.println("Offensive trait: " + player.atkUpGrades[player.numAtkUpgrades]);
@@ -157,10 +160,52 @@ public class GameLogic {
     }
 
     private static void shop() {
+        clearConsole();
+        printHeading("You meet a mysterious stranger.\nHe offers you something:");
+        int price = (int) (Math.random() * 10) + (player.pots * 3) + 10 + player.pots;
+        System.out.println("- Magic Potion: "+price+" gold.");
+        printSeparator(20);
+        System.out.println("Do you want to buy one?\n(1) Yes!\n(2) No thanks.");
+        int input = readInt("-> ", 2);
+        //check if player wants to buy
+        if(input == 1){
+            clearConsole();
+            //does player have enough gold?
+            if(player.gold >= price){
+                printHeading("You bought a magical potion for "+price+" gold.");
+                player.pots++;
+                player.gold -= price;
+            }else{
+                printHeading("You don't have enough gold to buy this...");
+            }
+            anythingToContinue();
+        }
     }
 
     private static void takeRest() {
-
+        clearConsole();
+        if(player.restsLeft >= 1){
+            printHeading("Do you want to take a rest? ("+player.restsLeft+" rest(s) left).");
+            System.out.println("(1) Yes\n(2) No, not now.");
+            int input = readInt("-> ", 2);
+            if(input == 1){
+                //player takes rest
+                clearConsole();
+                if(player.hp < player.maxHp){
+                    int hpRestored = (int) ((Math.random() * ((double) player.xp / 4) + 1) + 10);
+                    player.hp += hpRestored;
+                    if(player.hp > player.maxHp){
+                        player.hp = player.maxHp;
+                    }
+                    System.out.println("You took a rest and restored up to "+hpRestored+" health.");
+                    System.out.println("You are now at "+player.hp+" health.");
+                    player.restsLeft--;
+                }
+            }else{
+                System.out.println("You're at full health. You don't need to rest now!");
+            }
+            anythingToContinue();
+        }
     }
 
     private static void randomBattle() {
@@ -210,15 +255,44 @@ public class GameLogic {
                     break;
                 }else if(enemy.hp <= 0){
                     clearConsole();
-                    printHeading("You defeathed the "+enemy.name+"!");
+                    printHeading("You defeated the "+enemy.name+"!");
                     player.xp += enemy.xp;
                     System.out.println("You earned "+enemy.xp+" XP!");
+                    //random drops
+                    boolean addRest = (Math.random()*5 + 1 <= 2.25);
+                    int goldEarned = (int)(Math.random()*enemy.xp);
+                    if(addRest){
+                        player.restsLeft++;
+                        System.out.println("You earned the chance to get an additional rest.");
+                    }
+                    if(goldEarned < 0){
+                        player.gold += goldEarned;
+                        System.out.println("You collect " + goldEarned + " gold from the " + enemy.name+"'s corpse");
+                    }
                     anythingToContinue();
                     break;
                 }
                 
             }else if(input == 2){
                     //use potion
+                clearConsole();
+                if(player.pots > 0 && player.hp < player.maxHp){
+                    //player can take a potion
+                    //make sure player wants to drink a potion
+                    printHeading("Do you want to drink a potion? (1) Yes\n(2) No, maybe later");
+                    input = readInt("-> ", 2);
+                    if(input == 1){
+                        //player took it
+                        player.hp = player.maxHp;
+                        clearConsole();
+                        printHeading("You drank a magic potion.  It restored your health to "+player.maxHp);
+                        anythingToContinue();
+                    }
+                }else{
+                    //player can't take potion
+                    printHeading("You don't have any potions or you're at full health.");
+                    anythingToContinue();
+                }
                 break;
             }else{
                 //Run Away
@@ -315,6 +389,9 @@ public class GameLogic {
     }
 
     private static void finalBattle() {
+        battle(new Enemy("THE EVIL EMPEROR", 300));
+        Story.printEnd(player);
+        isRunning = false;
     }
 
 
