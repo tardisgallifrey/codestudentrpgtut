@@ -5,6 +5,11 @@ import java.util.Scanner;
 public class GameLogic {
     static Scanner input = new Scanner(System.in);
     static Player player;
+    public static boolean isRunning;
+
+    //Story elements
+    public static int place = 0, act;
+    public static String[] places = {"Everlasting Mountains", "Haunted Landlines", "Castle of the Evil Emperor", "Throne Room"};
 
     public static int readInt(String prompt, int userChoice){
         int val;
@@ -74,7 +79,61 @@ public class GameLogic {
             }
         }while (!nameSet) ;
 
+        Story.printIntro();
+
+        isRunning = true;
         player = new Player(name);
+
+        Story.printFirstActIntro();
+
+        gameLoop();
+    }
+
+    public static void gameLoop(){
+        while(isRunning){
+            printMenu();
+            int input = readInt("-> ", 3);
+            switch(input){
+                case 1 -> continueJourney();
+                case 2 -> characterInfo();
+                case 3 -> isRunning = false;
+            }
+        }
+    }
+
+    public static void characterInfo(){
+        clearConsole();
+        printHeading("CHARACTER INFO");
+        System.out.println(player.name + "\tHP: " + player.hp + "/" + player.maxHp);
+        printSeparator(20);
+        System.out.println("XP: " + player.xp);
+
+        if(player.numAtkUpgrades > 0){
+            System.out.println("Offensive trait: " + player.atkUpGrades[player.numAtkUpgrades]);
+            printSeparator(20);
+        }
+
+        if(player.numDefUpgrades > 0){
+            System.out.println("Defensive trait: " + player.defUpgrades[player.numDefUpgrades]);
+            printSeparator(20);
+        }
+
+        anythingToContinue();
+    }
+
+    public static void printMenu(){
+        clearConsole();
+        printHeading(places[place]);
+        System.out.println("Choose an action:");
+        printSeparator(20);
+        System.out.println("(1) Continue on your journey");
+        System.out.println("(2) Character Info");
+        System.out.println("(3) Exit Game");
+
+    }
+
+    public static void continueJourney(){
+
     }
 
 
