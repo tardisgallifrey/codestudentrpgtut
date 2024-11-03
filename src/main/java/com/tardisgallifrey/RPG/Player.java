@@ -14,7 +14,7 @@ public class Player extends Character{
         chooseTrait();
     }
 
-    private void chooseTrait() {
+    public void chooseTrait() {
         GameLogic.clearConsole();
         GameLogic.printHeading("Choose a Trait:");
         System.out.println("(1) " + atkUpGrades[numAtkUpgrades]);
@@ -40,11 +40,11 @@ public class Player extends Character{
 
     @Override
     public int attack() {
-        return 0;
+        return (int)(Math.random() * ((double) xp /4 + numAtkUpgrades*3 + 3) + (double) xp /10 + numAtkUpgrades*2 + numDefUpgrades + 1);
     }
 
     @Override
     public int defend() {
-        return 0;
+        return (int)(Math.random()*((double) xp /4 + numDefUpgrades*3 + 3) + (double) xp /10 + numDefUpgrades*2 + numAtkUpgrades + 1);
     }
 }
